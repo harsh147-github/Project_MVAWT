@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project MVAWT — Magnus-Effect Bladeless Wind Turbines for Indian Highways</title>
+<meta name="description" content="Harvesting highway wind with Magnus-effect bladeless turbines. India's first roadside wind-solar hybrid energy solution.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500&family=Outfit:wght@200;300;400;500;600&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#050709;--bg2:#0a0e14;--bg3:#0f1520;--fg:#eef2ea;--fg2:#7d8e75;--fg3:#4a5a42;--green:#2dff88;--teal:#1aecd5;--lime:#a8ff3e;--dim:rgba(45,255,136,.06);--serif:'Playfair Display',Georgia,serif;--sans:'Outfit',system-ui,sans-serif;--mono:'JetBrains Mono',monospace;--ease:cubic-bezier(.16,1,.3,1)}
+html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
+body{background:var(--bg);color:var(--fg);font-family:var(--sans);overflow-x:hidden;line-height:1.6}
+::selection{background:var(--green);color:var(--bg)}
+canvas.bg-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.grain{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.03;mix-blend-mode:overlay;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='5' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:1.2rem 4vw;display:flex;align-items:center;justify-content:space-between;transition:all .5s}
+nav.scrolled{background:rgba(5,7,9,.85);backdrop-filter:blur(24px);border-bottom:1px solid rgba(45,255,136,.05)}
+.logo{font-family:var(--serif);font-size:1.3rem;color:var(--green);letter-spacing:-.01em;text-decoration:none}
+.logo i{font-style:italic;color:var(--fg2);font-weight:400}
+.nav-r{display:flex;align-items:center;gap:2rem}
+.nav-r a{color:var(--fg2);text-decoration:none;font-size:.78rem;font-weight:400;letter-spacing:.08em;text-transform:uppercase;transition:color .3s}
+.nav-r a:hover{color:var(--green)}
+.nav-btn{padding:.55rem 1.3rem;border:1px solid rgba(45,255,136,.3);border-radius:100px;color:var(--green)!important;font-size:.72rem;font-weight:500;letter-spacing:.1em;transition:all .3s}
+.nav-btn:hover{background:var(--green);color:var(--bg)!important}
+section{position:relative;z-index:2}
+.story{padding:12vh 6vw;min-height:80vh}
+.story-full{min-height:100vh;display:flex;align-items:center}
+.story-full>div{width:100%}
+.ch-label{display:flex;align-items:center;gap:1rem;margin-bottom:2.5rem;font-family:var(--mono);font-size:.65rem;color:var(--green);letter-spacing:.15em;text-transform:uppercase}
+.ch-label::before{content:'';width:36px;height:1px;background:var(--green)}
+.ch-label .n{color:var(--fg3)}
+h2{font-family:var(--serif);font-size:clamp(2rem,4.5vw,3.8rem);line-height:1.08;font-weight:400;letter-spacing:-.02em;max-width:16ch;margin-bottom:1.5rem}
+h2 em{font-style:italic;color:var(--green)}
+.story-lead{font-size:1.05rem;color:var(--fg2);line-height:1.85;max-width:580px;font-weight:300}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:start;margin-top:5rem}
+.split-r{direction:rtl}.split-r>*{direction:ltr}
+.visual-box{position:relative;border-radius:16px;overflow:hidden;background:var(--bg2);border:1px solid rgba(255,255,255,.04)}
+.visual-box canvas{width:100%;height:100%;display:block}
+.v-cap{position:absolute;bottom:0;left:0;right:0;padding:1rem 1.5rem;background:linear-gradient(to top,rgba(5,7,9,.9),transparent);font-size:.72rem;color:var(--fg2);font-family:var(--mono);letter-spacing:.03em}
+.info-card{padding:1.8rem 1.6rem;border:1px solid rgba(255,255,255,.05);border-radius:12px;background:rgba(255,255,255,.015);transition:all .6s var(--ease);margin-bottom:1.2rem}
+.info-card:hover{border-color:rgba(45,255,136,.12);transform:translateY(-2px)}
+.info-card h3{font-family:var(--serif);font-size:1.1rem;font-weight:500;margin-bottom:.5rem}
+.info-card p{font-size:.84rem;color:var(--fg2);line-height:1.75}
+.info-card strong{color:var(--green)}
+.info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.2rem;margin-top:2.5rem}
+.cmp-wrap{margin-top:3rem;border:1px solid rgba(255,255,255,.05);border-radius:16px;overflow:hidden}
+.cmp-header{display:grid;grid-template-columns:1.5fr 1fr 1fr;background:var(--bg3);padding:1rem 2rem}
+.cmp-header span{font-family:var(--mono);font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--fg3)}
+.cmp-header span:nth-child(2){color:var(--green)}
+.cmp-row{display:grid;grid-template-columns:1.5fr 1fr 1fr;padding:.85rem 2rem;border-top:1px solid rgba(255,255,255,.03);font-size:.84rem;transition:background .3s}
+.cmp-row:hover{background:rgba(45,255,136,.02)}
+.cmp-row .label{color:var(--fg2)}.cmp-row .g{color:var(--green);font-family:var(--mono);font-size:.8rem}.cmp-row .b{color:var(--fg3);font-family:var(--mono);font-size:.8rem}
+.stat-banner{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;margin-top:4rem}
+.stat-card{text-align:center;padding:2.5rem 1.5rem;border:1px solid rgba(45,255,136,.08);border-radius:14px;background:linear-gradient(160deg,rgba(45,255,136,.03),transparent)}
+.stat-card .sv{font-family:var(--serif);font-size:clamp(1.6rem,3vw,2.6rem);color:var(--green);line-height:1.1}
+.stat-card .sl{font-size:.68rem;color:var(--fg2);margin-top:.4rem;text-transform:uppercase;letter-spacing:.08em}
+.timeline{margin-top:3rem;position:relative;padding-left:2.5rem}
+.timeline::before{content:'';position:absolute;left:4px;top:0;bottom:0;width:1px;background:linear-gradient(to bottom,var(--green),var(--fg3),transparent)}
+.tl-item{position:relative;padding:0 0 3rem 2.5rem;opacity:0;transform:translateY(30px);transition:all .8s var(--ease)}
+.tl-item.vis{opacity:1;transform:translateY(0)}
+.tl-item::before{content:'';position:absolute;left:-1px;top:6px;width:10px;height:10px;border-radius:50%;border:2px solid var(--green);background:var(--bg);transition:all .4s}
+.tl-item.vis::before{background:var(--green);box-shadow:0 0 16px rgba(45,255,136,.4)}
+.tl-ph{font-family:var(--mono);font-size:.65rem;color:var(--green);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.3rem}
+.tl-item h3{font-family:var(--serif);font-size:1.2rem;font-weight:500;margin-bottom:.4rem}
+.tl-item p{font-size:.84rem;color:var(--fg2);line-height:1.75;max-width:520px}
+.tl-tag{display:inline-block;margin-top:.6rem;padding:.2rem .6rem;background:rgba(45,255,136,.07);border:1px solid rgba(45,255,136,.15);border-radius:100px;font-family:var(--mono);font-size:.65rem;color:var(--green)}
+.dark{background:var(--bg2)}
+.cta-s{text-align:center;padding:14vh 6vw}
+.cta-s h2{max-width:none;margin:0 auto 1.5rem}
+.cta-s .story-lead{margin:0 auto 3rem;text-align:center}
+.cta-link{display:inline-flex;align-items:center;gap:.7rem;padding:1rem 2.2rem;background:var(--green);color:var(--bg);border-radius:100px;font-size:.85rem;font-weight:600;text-decoration:none;text-transform:uppercase;letter-spacing:.08em;transition:all .3s}
+.cta-link:hover{transform:translateY(-2px);box-shadow:0 0 50px rgba(45,255,136,.25)}
+footer{padding:3rem 6vw;border-top:1px solid rgba(255,255,255,.04);display:flex;justify-content:space-between;align-items:center;position:relative;z-index:2;font-size:.72rem;color:var(--fg3)}
+footer a{color:var(--fg2);text-decoration:none}
+.rv{opacity:0;transform:translateY(30px);transition:all .9s var(--ease)}.rv.vis{opacity:1;transform:translateY(0)}
+.rv-d1{transition-delay:.12s}.rv-d2{transition-delay:.24s}.rv-d3{transition-delay:.36s}.rv-d4{transition-delay:.48s}
+.hero-s{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:0 6vw;position:relative}
+.hero-ey{display:inline-flex;align-items:center;gap:.6rem;font-family:var(--mono);font-size:.65rem;color:var(--green);letter-spacing:.12em;text-transform:uppercase;margin-bottom:2.5rem;padding:.4rem 1rem .4rem .5rem;border:1px solid rgba(45,255,136,.15);border-radius:100px;width:fit-content}
+.hero-ey .p{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pu 2s infinite}
+@keyframes pu{0%,100%{box-shadow:0 0 0 0 rgba(45,255,136,.5)}50%{box-shadow:0 0 0 8px rgba(45,255,136,0)}}
+.hero-s h1{font-family:var(--serif);font-size:clamp(2.8rem,7vw,6.2rem);line-height:.96;font-weight:400;letter-spacing:-.025em;max-width:14ch}
+.hero-s h1 em{font-style:italic;color:var(--green)}
+.hero-d{margin-top:2rem;font-size:1.05rem;color:var(--fg2);line-height:1.8;max-width:540px;font-weight:300}
+.hero-m{display:flex;gap:3.5rem;margin-top:3.5rem;padding-top:2.5rem;border-top:1px solid rgba(255,255,255,.05)}
+.metric .mv{font-family:var(--mono);font-size:clamp(1.3rem,2.5vw,1.8rem);color:var(--green);font-weight:300}
+.metric .ml{font-size:.65rem;color:var(--fg3);text-transform:uppercase;letter-spacing:.1em;margin-top:.2rem}
+.sc{position:absolute;bottom:3rem;left:50%;transform:translateX(-50%);text-align:center;color:var(--fg3);font-size:.6rem;letter-spacing:.2em;text-transform:uppercase}
+.sc .ar{display:block;margin:0 auto .6rem;width:1px;height:36px;background:linear-gradient(to bottom,transparent,var(--green));animation:bob 2.5s ease-in-out infinite}
+@keyframes bob{0%,100%{opacity:.3;transform:translateY(0)}50%{opacity:1;transform:translateY(6px)}}
+@media(max-width:900px){.split{grid-template-columns:1fr;gap:3rem}.split-r{direction:ltr}.stat-banner{grid-template-columns:1fr 1fr}.cmp-wrap{font-size:.75rem;overflow-x:auto}.nav-r a:not(.nav-btn){display:none}.hero-m{flex-wrap:wrap;gap:2rem}}
+</style>
+</head>
+<body>
+<canvas class="bg-canvas" id="bgC"></canvas>
+<div class="grain"></div>
+<nav id="nav"><a href="#" class="logo">MVAWT <i>project</i></a><div class="nav-r"><a href="#prob">Problem</a><a href="#phys">Physics</a><a href="#sol">Solution</a><a href="#dep">Deploy</a><a href="#road">Roadmap</a><a href="https://github.com/harsh147-github/Project_MVAWT" class="nav-btn" target="_blank">GitHub ↗</a></div></nav>
+
+<!-- HERO -->
+<section class="hero-s" id="top">
+<div class="hero-ey rv"><span class="p"></span>Patent-protected · South Africa & India</div>
+<h1 class="rv rv-d1">Every passing truck is an <em>untapped power plant</em></h1>
+<p class="hero-d rv rv-d2">Magnus-effect bladeless wind turbines harvest vehicle-induced wind along India's 150,000+ km highway network. No blades. No noise. Paired with solar. Pure physics meets infrastructure.</p>
+<div class="hero-m rv rv-d3"><div class="metric"><div class="mv">2 m/s</div><div class="ml">Cut-in speed</div></div><div class="metric"><div class="mv">150K+</div><div class="ml">km highways</div></div><div class="metric"><div class="mv">Zero</div><div class="ml">Competitors (India)</div></div><div class="metric"><div class="mv">24/7</div><div class="ml">Wind from traffic</div></div></div>
+<div class="sc"><span class="ar"></span>Begin the story</div>
+</section>
+
+<!-- CH1 PROBLEM -->
+<section class="story story-full" id="prob"><div>
+<div class="ch-label"><span class="n">01</span> The Invisible River</div>
+<h2 class="rv">A <em>river of wind</em> flows along every highway — and nobody is capturing it</h2>
+<p class="story-lead rv rv-d1">Every truck at 60 km/h creates a 4–8 m/s wind pulse. Multiply by 50,000 vehicles/day across 150,000 km of highways — an energy resource hiding in plain sight.</p>
+<div class="split" style="margin-top:4rem">
+<div class="visual-box rv rv-d2" style="aspect-ratio:4/3"><canvas id="hwScene" width="800" height="600"></canvas><div class="v-cap">↑ Animated: trucks generate wind pulses harvested by roadside MVAWT turbines</div></div>
+<div>
+<div class="info-card rv rv-d2"><h3>🌬️ The wind is already there</h3><p>Research confirms: heavy trucks create wind of <strong>4–8 m/s</strong> at just 1 meter from the road edge. Thousands of energy pulses per hour on any busy expressway.</p></div>
+<div class="info-card rv rv-d3"><h3>⚡ Conventional turbines can't harvest it</h3><p>Traditional turbines need <strong>5+ m/s</strong> to even start. They're designed for hilltops — not chaotic, low-speed, multi-directional highway turbulence.</p></div>
+<div class="info-card rv rv-d4"><h3>🔮 Until now</h3><p>Magnus-effect turbines start at <strong>2 m/s</strong> and capture wind from all directions. Purpose-built for the exact conditions highways create.</p></div>
+</div></div>
+</div></section>
+
+<!-- CH2 PHYSICS -->
+<section class="story dark" id="phys">
+<div class="ch-label"><span class="n">02</span> The Physics</div>
+<h2 class="rv">The <em>Magnus effect</em> — nature's hidden force, weaponized for energy</h2>
+<p class="story-lead rv rv-d1">In 1852, Heinrich Gustav Magnus discovered that a spinning cylinder in airflow experiences lateral force. The same physics curving a footballer's free kick can generate electricity from the lightest breeze.</p>
+<div class="split split-r" style="margin-top:4rem">
+<div class="visual-box rv rv-d2" style="aspect-ratio:1"><canvas id="magDemo" width="600" height="600"></canvas><div class="v-cap">↑ Live: spinning cylinder deflects airflow → low pressure above → LIFT force</div></div>
+<div>
+<div class="info-card rv rv-d1"><h3>How it works</h3><p>A cylinder spins in moving air. One side accelerates airflow (low pressure), the other decelerates it (high pressure). The pressure difference creates lift — up to <strong>14× the lift of a conventional airfoil</strong>.</p></div>
+<div class="info-card rv rv-d2"><h3>Why not blades?</h3><p>At 2–5 m/s, airfoil blades suffer laminar separation and stall. Spinning cylinders overcome this by injecting momentum into the boundary layer — producing <strong>3× more power in low wind</strong>.</p></div>
+<div class="info-card rv rv-d3"><h3>Battle-tested</h3><p>Challenergy (Japan) commercially deploys Magnus VAWTs. Their unit survived <strong>Typhoon Chanthu — Category 5, gusts of 84 m/s</strong>. The technology is validated.</p></div>
+</div></div>
+</section>
+
+<!-- CH3 SOLUTION -->
+<section class="story story-full" id="sol"><div>
+<div class="ch-label"><span class="n">03</span> Our Innovation</div>
+<h2 class="rv">Bladeless. Silent. <em>Solar-crowned.</em> Built for India's roads.</h2>
+<p class="story-lead rv rv-d1">Each unit integrates spinning cylinders with a solar panel on top — the world's first highway-optimized wind-solar hybrid. Engineered for extreme heat, monsoon, dust, and millions of vehicles.</p>
+<div class="split" style="margin-top:4rem">
+<div class="visual-box rv rv-d2" style="aspect-ratio:3/4"><canvas id="turbViz" width="600" height="800"></canvas><div class="v-cap">↑ MVAWT concept — rotating cylinders + solar crown on vertical axis</div></div>
+<div>
+<div class="ch-label" style="margin-top:0"><span class="n">6</span> decisive advantages</div>
+<div class="info-card rv"><h3>↓ Low-wind dominance</h3><p>Generates from <strong>2 m/s</strong>. Produces <strong>3× more power</strong> than bladed turbines in the 2–5 m/s highway wind zone.</p></div>
+<div class="info-card rv rv-d1"><h3>⊕ Omnidirectional 360°</h3><p>Vertical axis captures wind from all directions. No yaw mechanism needed for chaotic highway turbulence.</p></div>
+<div class="info-card rv rv-d2"><h3>◇ Zero blade-throw risk</h3><p>Solid cylinders can't fragment. Self-regulating in storms. Tested to <strong>84 m/s</strong>. Inherently traffic-safe.</p></div>
+<div class="info-card rv rv-d3"><h3>♫ Silent (52 dB)</h3><p>Highway noise (70–80 dB) completely masks turbine sound. Zero community opposition.</p></div>
+<div class="info-card rv rv-d4"><h3>🕊 Bird & wildlife safe</h3><p>No blade-tip kill mechanism. Visible cylinders at low speed. Clean energy that's <strong>actually</strong> clean.</p></div>
+<div class="info-card rv"><h3>☀ Wind + Solar hybrid</h3><p>Wind peaks in monsoon when solar drops. Traffic wind at night when solar sleeps. Combined: <strong>50% capacity utilization</strong>.</p></div>
+</div></div>
+</div></section>
+
+<!-- CH4 COMPARISON -->
+<section class="story dark">
+<div class="ch-label"><span class="n">04</span> Head-to-Head</div>
+<h2 class="rv">Magnus bladeless vs <em>conventional bladed</em></h2>
+<p class="story-lead rv rv-d1">Every metric that matters for highway deployment favors Magnus.</p>
+<div class="cmp-wrap rv rv-d2">
+<div class="cmp-header"><span>Metric</span><span>Magnus MVAWT</span><span>Conventional</span></div>
+<div class="cmp-row"><span class="label">Cut-in wind speed</span><span class="g">2 m/s</span><span class="b">5+ m/s</span></div>
+<div class="cmp-row"><span class="label">Operating range</span><span class="g">2–40 m/s</span><span class="b">5–25 m/s</span></div>
+<div class="cmp-row"><span class="label">Noise at 25m</span><span class="g">~52 dB</span><span class="b">60–70 dB</span></div>
+<div class="cmp-row"><span class="label">Bird fatalities</span><span class="g">Zero</span><span class="b">1.17M/yr (US)</span></div>
+<div class="cmp-row"><span class="label">Blade throw risk</span><span class="g">Impossible</span><span class="b">Present</span></div>
+<div class="cmp-row"><span class="label">Wind direction</span><span class="g">Omni 360°</span><span class="b">Needs yaw</span></div>
+<div class="cmp-row"><span class="label">Storm survival</span><span class="g">84 m/s tested</span><span class="b">Shutdown >25</span></div>
+<div class="cmp-row"><span class="label">Highway suitability</span><span class="g">Purpose-built</span><span class="b">Not designed</span></div>
+<div class="cmp-row"><span class="label">Low-wind output (2–5 m/s)</span><span class="g">3× conventional</span><span class="b">Zero / minimal</span></div>
+</div>
+</section>
+
+<!-- CH5 DEPLOYMENT -->
+<section class="story story-full" id="dep"><div>
+<div class="ch-label"><span class="n">05</span> Where They Go</div>
+<h2 class="rv">India's highways are a <em>sleeping wind farm</em></h2>
+<p class="story-lead rv rv-d1">Expressway medians, ghat crests, toll plazas — thousands of kilometers where wind flows constantly.</p>
+<div class="stat-banner rv rv-d2">
+<div class="stat-card"><div class="sv">146,342</div><div class="sl">km National Highways</div></div>
+<div class="stat-card"><div class="sv">6,059</div><div class="sl">km Expressways</div></div>
+<div class="stat-card"><div class="sv">₹7,700 Cr</div><div class="sl">Addressable Market</div></div>
+<div class="stat-card"><div class="sv">50,000</div><div class="sl">km Vision 2047</div></div>
+</div>
+<div class="split" style="margin-top:5rem">
+<div class="visual-box rv rv-d1" style="aspect-ratio:16/10"><canvas id="ghatSc" width="960" height="600"></canvas><div class="v-cap">↑ Animated: ghat road deployment — monsoon winds 8–20 m/s + truck wind wash</div></div>
+<div>
+<div class="info-card rv rv-d1" style="border-left:2px solid var(--green)"><h3>🏗️ Samruddhi Expressway</h3><p>701 km, India's first solar highway. MSRDC seeks wind-solar hybrid. <strong>204 MW solar planned</strong>. Our #1 target.</p></div>
+<div class="info-card rv rv-d2" style="border-left:2px solid var(--teal)"><h3>⛰️ Western Ghats</h3><p>Bhor, Kasara, Tamhini Ghats. Orographic winds <strong>8–20 m/s</strong> in monsoon. 2–3× flat highway averages.</p></div>
+<div class="info-card rv rv-d3" style="border-left:2px solid var(--lime)"><h3>📋 SECI × NHAI MoU</h3><p>Nov 2025: first national partnership for highway renewable energy. <strong>Legal precedent established.</strong></p></div>
+<div class="info-card rv rv-d4" style="border-left:2px solid var(--fg3)"><h3>🚂 Railways, Smart Cities, Defence</h3><p>Railways net-zero by 2030. 100 Smart Cities. Remote posts. <strong>₹5,000+ Cr</strong> parallel markets.</p></div>
+</div></div>
+</div></section>
+
+<!-- CH6 GOV STRATEGY -->
+<section class="story dark">
+<div class="ch-label"><span class="n">06</span> Government Strategy</div>
+<h2 class="rv">From startup to <em>state partner</em></h2>
+<p class="story-lead rv rv-d1">DPIIT + MSME registrations give us procurement superpowers. NIWE certification builds the credibility moat.</p>
+<div class="info-grid rv rv-d2" style="grid-template-columns:repeat(2,1fr)">
+<div class="info-card"><h3>⊞ DPIIT + MSME</h3><p>80% patent fee cut. EMD exemption. 25% procurement preference. 3-year tax holiday. These are competitive weapons large companies can't access.</p></div>
+<div class="info-card"><h3>⊡ GeM + CPPP</h3><p>Direct sales to all govt agencies. 15% price preference. Relaxed experience criteria for MSMEs. The marketplace where government shops.</p></div>
+<div class="info-card"><h3>⊠ NIWE Certification</h3><p>IS/IEC 61400-2 type testing. ALMM listing for all govt projects. ₹15–30L, 12 months. The moat separating serious players from hobbyists.</p></div>
+<div class="info-card"><h3>⊗ MSRDC Pilot</h3><p>Approach JMD directly with tech demo for Samruddhi Expressway. Shape tender specs around Magnus-effect. Partner, not vendor.</p></div>
+</div>
+<div class="info-grid rv rv-d3" style="grid-template-columns:repeat(3,1fr);margin-top:1.5rem">
+<div class="info-card" style="text-align:center"><h3 style="color:var(--green)">PPP / BOOT</h3><p>Deploy on govt land, sell power at ₹3–4/kWh. The model MSRDC already uses for solar.</p></div>
+<div class="info-card" style="text-align:center"><h3 style="color:var(--teal)">CSR Funding</h3><p>Section 135 lists renewable energy as eligible CSR. Target: Tata, NTPC, ONGC, Adani.</p></div>
+<div class="info-card" style="text-align:center"><h3 style="color:var(--lime)">Energy-as-a-Service</h3><p>Deploy free, charge per kWh. Recurring revenue, higher lifetime value.</p></div>
+</div>
+</section>
+
+<!-- CH7 ROADMAP -->
+<section class="story" id="road">
+<div class="ch-label"><span class="n">07</span> Execution</div>
+<h2 class="rv">36 months from <em>zero</em> to government contract</h2>
+<p class="story-lead rv rv-d1">Every phase has a gate. Every rupee accounted for. Each milestone unlocks the next round.</p>
+<div class="timeline">
+<div class="tl-item"><div class="tl-ph">Months 1–3 — Foundation</div><h3>Register. Patent. Simulate.</h3><p>Pvt Ltd via SPICe+. DPIIT + MSME + GST. Patent under SIPP (₹5,600). CFD with Zeus Numerix. Apply Venture Center Pune.</p><span class="tl-tag">₹4–5 lakh</span></div>
+<div class="tl-item"><div class="tl-ph">Months 4–6 — Validation</div><h3>Simulate. Model. Test.</h3><p>CFD gate: Cp > 0.15 → proceed. Scaled model via 3D printing. First hire. Investor outreach: Climate Angels, IAN, Social Alpha.</p><span class="tl-tag">₹12–16L cumulative</span></div>
+<div class="tl-item"><div class="tl-ph">Months 7–12 — Prototype</div><h3>Wind tunnel. Full build. Power up.</h3><p>IIT Bombay wind tunnel. 1 kW prototype + 400W solar. Field testing. Close seed (₹1–2 Cr). First MSRDC meeting.</p><span class="tl-tag">₹34–46L cumulative</span></div>
+<div class="tl-item"><div class="tl-ph">Months 13–18 — Certification</div><h3>NIWE testing. Pilot proposal.</h3><p>Submit NIWE application. Formal proposal to MSRDC for Samruddhi. GeM + CPPP registration.</p><span class="tl-tag">External funding</span></div>
+<div class="tl-item"><div class="tl-ph">Months 19–24 — First Deployment</div><h3>5–10 units on a live highway.</h3><p>Pilot order. Pune contract manufacturing. IoT dashboards live. First PPA revenue. Media campaign.</p><span class="tl-tag">⚡ First revenue</span></div>
+<div class="tl-item"><div class="tl-ph">Months 25–36 — Scale</div><h3>100+ unit government contract.</h3><p>Win MSRDC/NHAI contract. Series A (₹5–20 Cr). 100-unit batch manufacturing. Team scales to 20+.</p><span class="tl-tag">₹5–20 Cr Series A</span></div>
+</div>
+</section>
+
+<!-- CH8 FUNDING -->
+<section class="story dark">
+<div class="ch-label"><span class="n">08</span> Capital Strategy</div>
+<h2 class="rv">Backed by India's <em>climate capital</em></h2>
+<p class="story-lead rv rv-d1">Sequenced funding — each rung unlocked by the previous milestone.</p>
+<div class="info-grid rv rv-d2" style="grid-template-columns:repeat(2,1fr)">
+<div class="info-card" style="border-top:2px solid var(--fg3)"><div style="font-family:var(--mono);font-size:.6rem;color:var(--fg3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.8rem">Pre-Seed · Grants</div><h3>₹10–50L — Zero equity</h3><p>DST NIDHI PRAYAS, SISFS, MNRE Call for Proposals, BIRAC BIG. Pure runway, no dilution.</p></div>
+<div class="info-card" style="border-top:2px solid var(--green)"><div style="font-family:var(--mono);font-size:.6rem;color:var(--green);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.8rem">Seed · Angels</div><h3>₹1–2 Cr — 15–25%</h3><p>Climate Angels, IAN, Speciale Invest, Social Alpha. Triggered by working prototype + field data.</p></div>
+<div class="info-card" style="border-top:2px solid var(--teal)"><div style="font-family:var(--mono);font-size:.6rem;color:var(--teal);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.8rem">Series A · VC</div><h3>₹5–20 Cr — Post-pilot</h3><p>Avaana Capital, Infuse Ventures, India Deep Tech Alliance. Triggered by pilot data + govt LOI.</p></div>
+<div class="info-card" style="border-top:2px solid var(--lime)"><div style="font-family:var(--mono);font-size:.6rem;color:var(--lime);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.8rem">Revenue · Customers</div><h3>PPP, PPA, EaaS</h3><p>Sell (₹2–3L/unit), lease (₹3–4/kWh), or EaaS. IRB, L&T, Smart Cities, Railways, defence.</p></div>
+</div>
+</section>
+
+<!-- CTA -->
+<section class="cta-s">
+<h2 class="rv">The highway is <em>waiting</em></h2>
+<p class="story-lead rv rv-d1">India builds 28 km of highway every day. Each kilometer is a wind farm waiting to happen. Zero competition in the world's largest highway-building nation.</p>
+<a href="https://github.com/harsh147-github/Project_MVAWT" class="cta-link rv rv-d2" target="_blank">Explore on GitHub →</a>
+</section>
+
+<footer><div>© 2026 Project MVAWT · Patent-protected · Pune, India</div><div><a href="https://github.com/harsh147-github/Project_MVAWT" target="_blank">GitHub</a></div></footer>
+
+<script>
+// BG PARTICLES
+!function(){const c=document.getElementById('bgC'),x=c.getContext('2d');let W,H,p=[];const N=120;function r(){W=c.width=innerWidth;H=c.height=innerHeight;p=[];for(let i=0;i<N;i++)p.push({x:Math.random()*W,y:Math.random()*H,vx:.2+Math.random()*.5,vy:(Math.random()-.5)*.15,s:Math.random()*1.5+.3,a:Math.random()*.08+.015,h:140+Math.random()*25})}function d(){x.clearRect(0,0,W,H);const f=Math.max(0,1-pageYOffset/(H*2));for(const q of p){q.x+=q.vx;q.y+=q.vy+Math.sin(performance.now()*.0003+q.x*.003)*.1;if(q.x>W+5)q.x=-5;if(q.y<-5)q.y=H+5;if(q.y>H+5)q.y=-5;x.beginPath();x.arc(q.x,q.y,q.s,0,6.28);x.fillStyle='hsla('+q.h+',90%,60%,'+q.a*f+')';x.fill()}for(let i=0;i<p.length-1;i++){const a=p[i],b=p[i+1];if(Math.hypot(a.x-b.x,a.y-b.y)<90){x.beginPath();x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);x.strokeStyle='rgba(45,255,136,'+(0.01*f)+')';x.lineWidth=.3;x.stroke()}}requestAnimationFrame(d)}addEventListener('resize',r);r();d()}();
+
+// HIGHWAY SCENE
+!function(){const c=document.getElementById('hwScene');if(!c)return;const x=c.getContext('2d'),W=800,H=600;let trucks=[],wp=[];for(let i=0;i<4;i++)trucks.push({x:-200-i*300,y:318+Math.random()*15,sp:2.2+Math.random()*1.3,w:110+Math.random()*30,h:45+Math.random()*10});for(let i=0;i<180;i++)wp.push({x:Math.random()*W,y:200+Math.random()*350,vx:0,vy:0,l:Math.random()*80,m:60+Math.random()*60});function d(){x.fillStyle='#080c12';x.fillRect(0,0,W,H);const g=x.createLinearGradient(0,0,0,220);g.addColorStop(0,'#0a0f18');g.addColorStop(1,'#101820');x.fillStyle=g;x.fillRect(0,0,W,220);for(let i=0;i<25;i++){x.fillStyle='rgba(255,255,255,'+(0.08+Math.random()*.15)+')';x.fillRect(40+i*30+Math.sin(i)*8,15+i*8+Math.cos(i)*12,1,1)}x.beginPath();x.moveTo(0,200);for(let i=0;i<=W;i+=3)x.lineTo(i,200-Math.sin(i*.007)*35-Math.sin(i*.014)*18);x.lineTo(W,280);x.lineTo(0,280);x.closePath();x.fillStyle='#0d1520';x.fill();x.fillStyle='#1a1e28';x.fillRect(0,280,W,110);const t=performance.now()*.05;x.setLineDash([25,18]);x.lineDashOffset=-t;x.strokeStyle='rgba(255,255,100,.12)';x.lineWidth=2;x.beginPath();x.moveTo(0,335);x.lineTo(W,335);x.stroke();x.setLineDash([]);x.strokeStyle='rgba(255,255,255,.06)';x.lineWidth=1;x.beginPath();x.moveTo(0,280);x.lineTo(W,280);x.stroke();x.beginPath();x.moveTo(0,390);x.lineTo(W,390);x.stroke();x.fillStyle='#0c1018';x.fillRect(0,390,W,210);for(let i=0;i<W;i+=7){x.fillStyle='rgba(45,255,136,'+(0.02+Math.random()*.025)+')';x.fillRect(i,395+Math.random()*4,2,3)}
+// Turbine
+const tx=580,tb=390;x.strokeStyle='rgba(45,255,136,.25)';x.lineWidth=3;x.beginPath();x.moveTo(tx,tb);x.lineTo(tx,tb-130);x.stroke();const an=performance.now()*.003;for(let i=0;i<4;i++){const a=an+i*1.57,r=28,cx=tx+Math.cos(a)*r,cy=tb-100+Math.sin(a)*r;x.beginPath();x.arc(cx,cy,7,0,6.28);x.fillStyle='rgba(45,255,136,.15)';x.fill();x.strokeStyle='rgba(45,255,136,.45)';x.lineWidth=1.5;x.stroke();const sa=performance.now()*.01+i;x.beginPath();x.arc(cx,cy,5,sa,sa+1.5);x.strokeStyle='rgba(45,255,136,.65)';x.stroke()}x.fillStyle='rgba(30,100,200,.25)';x.fillRect(tx-18,tb-143,36,9);x.strokeStyle='rgba(100,180,255,.25)';x.lineWidth=1;x.strokeRect(tx-18,tb-143,36,9);const gr=x.createRadialGradient(tx,tb-100,4,tx,tb-100,55);gr.addColorStop(0,'rgba(45,255,136,.05)');gr.addColorStop(1,'transparent');x.fillStyle=gr;x.fillRect(tx-55,tb-155,110,110);
+// Trucks
+for(const tr of trucks){tr.x+=tr.sp;if(tr.x>W+200){tr.x=-200;tr.sp=2.2+Math.random()*1.3}x.fillStyle='hsl('+(200+tr.w*.3)+',18%,'+(28+tr.h*.2)+'%)';x.fillRect(tr.x,tr.y-tr.h,tr.w,tr.h);x.fillStyle='hsl(210,12%,22%)';x.fillRect(tr.x+tr.w,tr.y-tr.h+8,22,tr.h-8);x.fillStyle='#111';x.beginPath();x.arc(tr.x+18,tr.y,7,0,6.28);x.fill();x.beginPath();x.arc(tr.x+tr.w-18,tr.y,7,0,6.28);x.fill();for(let j=0;j<2;j++){const w=wp[Math.floor(Math.random()*wp.length)];if(Math.abs(w.x-tr.x)<130&&w.y>260&&w.y<400){w.vx+=(w.y<tr.y?-.4:.25);w.vy+=(w.y<335?-.15:.15)}}}
+// Wind
+for(const p of wp){p.x+=p.vx*.7;p.y+=p.vy*.4;p.vx*=.95;p.vy*=.95;p.l++;if(p.l>p.m){p.x=Math.random()*W;p.y=260+Math.random()*140;p.vx=0;p.vy=0;p.l=0}const al=Math.max(0,.25*(1-p.l/p.m)*Math.min(1,Math.abs(p.vx)*2));if(al>.005){x.beginPath();x.arc(p.x,p.y,1,0,6.28);x.fillStyle='rgba(45,255,136,'+al+')';x.fill();x.beginPath();x.moveTo(p.x,p.y);x.lineTo(p.x-p.vx*5,p.y-p.vy*5);x.strokeStyle='rgba(45,255,136,'+(al*.4)+')';x.lineWidth=.5;x.stroke()}}
+x.font='10px Outfit,sans-serif';x.fillStyle='rgba(45,255,136,.3)';x.textAlign='left';x.fillText('← Vehicle-induced wind (4–8 m/s)',25,420);x.fillText('MVAWT Unit →',tx-55,tb+16);requestAnimationFrame(d)}d()}();
+
+// MAGNUS DEMO
+!function(){const c=document.getElementById('magDemo');if(!c)return;const x=c.getContext('2d'),W=600,H=600,cx=W/2,cy=H/2,R=65;const s=[];for(let i=0;i<100;i++)s.push({x:-20,y:Math.random()*H,sp:1+Math.random()*1.8});function d(){x.clearRect(0,0,W,H);x.strokeStyle='rgba(255,255,255,.012)';x.lineWidth=.5;for(let i=0;i<W;i+=25){x.beginPath();x.moveTo(i,0);x.lineTo(i,H);x.stroke()}for(let i=0;i<H;i+=25){x.beginPath();x.moveTo(0,i);x.lineTo(W,i);x.stroke()}for(const p of s){p.x+=p.sp*1.6;if(p.x>W+20){p.x=-20;p.y=Math.random()*H}const dx=p.x-cx,dy=p.y-cy,di=Math.sqrt(dx*dx+dy*dy);let dY=0,dX=0;if(di<R*3.5&&di>R*.9){const f=Math.pow(1-di/(R*3.5),1.5)*3.5;if(p.y<cy){dY=-f*2.2;dX=f*.4}else{dY=f*.8;dX=-f*.2}if(di<R*1.4){const pu=R*1.4-di;dX+=dx/di*pu*.08;dY+=dy/di*pu*.08}}const px=p.x+dX,py=p.y+dY,nr=di<R*2.8&&di>R,sp=Math.abs(dY)+Math.abs(dX),h=p.y<cy?140:155,al=nr?.12+sp*.03:.04,sz=nr?1.3+sp*.1:.8;x.beginPath();x.arc(px,py,sz,0,6.28);x.fillStyle='hsla('+h+',100%,60%,'+al+')';x.fill();if(nr&&sp>.4){x.beginPath();x.moveTo(px,py);x.lineTo(px-p.sp*3-dX*1.5,py-dY*1.5);x.strokeStyle='hsla('+h+',100%,60%,'+(al*.35)+')';x.lineWidth=.4;x.stroke()}}x.save();x.translate(cx,cy);const an=performance.now()*.002;x.beginPath();x.arc(0,0,R,0,6.28);x.fillStyle='rgba(45,255,136,.025)';x.fill();x.strokeStyle='rgba(45,255,136,.35)';x.lineWidth=2;x.stroke();for(let i=0;i<6;i++){const a=an+i*1.047;x.beginPath();x.arc(0,0,R-5,a,a+.35);x.strokeStyle='rgba(45,255,136,.65)';x.lineWidth=2.5;x.stroke()}x.beginPath();x.arc(0,0,3,0,6.28);x.fillStyle='rgba(45,255,136,.8)';x.fill();x.restore();x.font='bold 11px Outfit,sans-serif';x.textAlign='center';x.fillStyle='rgba(45,255,136,.5)';x.fillText('LOW PRESSURE',cx,cy-R-30);x.fillText('↑ LIFT FORCE',cx,cy-R-48);x.fillStyle='rgba(255,180,80,.35)';x.fillText('HIGH PRESSURE',cx,cy+R+42);x.strokeStyle='rgba(45,255,136,.4)';x.lineWidth=1.5;x.beginPath();x.moveTo(cx,cy-R-6);x.lineTo(cx,cy-R-60);x.stroke();x.beginPath();x.moveTo(cx-5,cy-R-52);x.lineTo(cx,cy-R-62);x.lineTo(cx+5,cy-R-52);x.fillStyle='rgba(45,255,136,.4)';x.fill();x.font='10px Outfit,sans-serif';x.fillStyle='rgba(255,255,255,.18)';x.textAlign='left';x.fillText('Airflow →',15,20);requestAnimationFrame(d)}d()}();
+
+// TURBINE VIZ
+!function(){const c=document.getElementById('turbViz');if(!c)return;const x=c.getContext('2d'),W=600,H=800;function d(){x.clearRect(0,0,W,H);const t=performance.now()*.001,cx=W/2,b=H-70;const g=x.createRadialGradient(cx,b-240,15,cx,b-240,180);g.addColorStop(0,'rgba(45,255,136,.03)');g.addColorStop(1,'transparent');x.fillStyle=g;x.fillRect(0,0,W,H);x.fillStyle='rgba(45,255,136,.015)';x.fillRect(0,b,W,70);x.fillStyle='rgba(100,120,100,.12)';x.beginPath();x.moveTo(cx-35,b);x.lineTo(cx+35,b);x.lineTo(cx+22,b-18);x.lineTo(cx-22,b-18);x.closePath();x.fill();const tt=b-470;x.strokeStyle='rgba(45,255,136,.22)';x.lineWidth=3.5;x.beginPath();x.moveTo(cx,b-18);x.lineTo(cx,tt+55);x.stroke();for(let y=b-70;y>tt+70;y-=55){x.strokeStyle='rgba(45,255,136,.06)';x.lineWidth=.8;x.beginPath();x.moveTo(cx-12,y);x.lineTo(cx+12,y-25);x.stroke();x.beginPath();x.moveTo(cx+12,y);x.lineTo(cx-12,y-25);x.stroke()}const hy=tt+90,hr=72;x.strokeStyle='rgba(45,255,136,.12)';x.lineWidth=.8;x.beginPath();x.arc(cx,hy,hr+12,0,6.28);x.stroke();for(let i=0;i<4;i++){const a=t*1.2+i*1.57,px=cx+Math.cos(a)*hr,py=hy+Math.sin(a)*hr;x.strokeStyle='rgba(45,255,136,.18)';x.lineWidth=1.5;x.beginPath();x.moveTo(cx,hy);x.lineTo(px,py);x.stroke();const cw=16,ch=55;x.save();x.translate(px,py);x.fillStyle='rgba(45,255,136,.06)';x.fillRect(-cw/2,-ch/2,cw,ch);x.strokeStyle='rgba(45,255,136,.35)';x.lineWidth=1.2;x.strokeRect(-cw/2,-ch/2,cw,ch);const sa=performance.now()*.007+i;for(let j=0;j<3;j++){const sy=-ch/2+ch*(j+.5)/3;x.beginPath();x.arc(0,sy,cw/2-2,sa+j,sa+j+1.1);x.strokeStyle='rgba(45,255,136,.55)';x.lineWidth=1.2;x.stroke()}x.restore()}x.beginPath();x.arc(cx,hy,7,0,6.28);x.fillStyle='rgba(45,255,136,.25)';x.fill();x.strokeStyle='rgba(45,255,136,.5)';x.lineWidth=1.5;x.stroke();const sy=tt;x.fillStyle='rgba(30,80,180,.18)';x.beginPath();x.moveTo(cx-50,sy);x.lineTo(cx+50,sy);x.lineTo(cx+40,sy+10);x.lineTo(cx-40,sy+10);x.closePath();x.fill();x.strokeStyle='rgba(80,150,255,.25)';x.lineWidth=.8;x.stroke();for(let i=-30;i<40;i+=14){x.strokeStyle='rgba(80,150,255,.12)';x.lineWidth=.4;x.beginPath();x.moveTo(cx+i,sy+1);x.lineTo(cx+i-1.5,sy+9);x.stroke()}x.font='10px Outfit,sans-serif';x.textAlign='left';x.fillStyle='rgba(80,150,255,.4)';x.fillText('400W Solar',cx+55,sy+7);x.fillStyle='rgba(45,255,136,.4)';x.fillText('Magnus Cylinders',cx+hr+25,hy);x.fillStyle='rgba(255,255,255,.15)';x.fillText('Tower',cx+16,b-190);x.fillText('Foundation',cx+40,b-4);x.strokeStyle='rgba(45,255,136,.1)';x.lineWidth=.8;for(let y=hy-55;y<hy+70;y+=22){const wx=cx-hr-55+Math.sin(t+y*.02)*8;x.beginPath();x.moveTo(wx,y);x.lineTo(wx+25,y);x.stroke();x.beginPath();x.moveTo(wx+20,y-2.5);x.lineTo(wx+27,y);x.lineTo(wx+20,y+2.5);x.fillStyle='rgba(45,255,136,.1)';x.fill()}requestAnimationFrame(d)}d()}();
+
+// GHAT SCENE
+!function(){const c=document.getElementById('ghatSc');if(!c)return;const x=c.getContext('2d'),W=960,H=600;const wp=[];for(let i=0;i<130;i++)wp.push({x:Math.random()*W,y:Math.random()*H,vx:0,vy:0,l:0,m:70+Math.random()*50});function d(){x.fillStyle='#060a10';x.fillRect(0,0,W,H);const t=performance.now()*.001;const sk=x.createLinearGradient(0,0,0,220);sk.addColorStop(0,'#080e18');sk.addColorStop(1,'#0c1520');x.fillStyle=sk;x.fillRect(0,0,W,220);for(let l=0;l<3;l++){const yo=170-l*25,am=55+l*18,fr=.005-l*.001;x.beginPath();x.moveTo(0,H);for(let i=0;i<=W;i+=2)x.lineTo(i,yo+Math.sin(i*fr+l)*am+Math.sin(i*fr*2.3+l*2)*am*.35);x.lineTo(W,H);x.closePath();x.fillStyle='rgba('+(10+l*4)+','+(15+l*4)+','+(25+l*7)+','+(0.8+l*.1)+')';x.fill()}x.beginPath();const rp=[];for(let i=0;i<=W;i+=3){const y=340+Math.sin(i*.008)*75+Math.sin(i*.015)*28;rp.push({x:i,y});if(i===0)x.moveTo(i,y);else x.lineTo(i,y)}x.strokeStyle='rgba(255,255,255,.07)';x.lineWidth=45;x.stroke();x.strokeStyle='rgba(255,255,100,.05)';x.lineWidth=1;x.setLineDash([14,9]);x.lineDashOffset=-t*25;x.stroke();x.setLineDash([]);
+[140,330,520,720].forEach(tx=>{const idx=Math.min(Math.floor(tx/3),rp.length-1);const ry=rp[idx].y,tb=ry-22,tt=tb-80;x.strokeStyle='rgba(45,255,136,.2)';x.lineWidth=1.8;x.beginPath();x.moveTo(tx,tb);x.lineTo(tx,tt+18);x.stroke();const a=t*1.5+tx*.01;for(let i=0;i<3;i++){const ca=a+i*2.09,r=16,px=tx+Math.cos(ca)*r,py=tt+27+Math.sin(ca)*r;x.beginPath();x.arc(px,py,4.5,0,6.28);x.fillStyle='rgba(45,255,136,.12)';x.fill();x.strokeStyle='rgba(45,255,136,.35)';x.lineWidth=.8;x.stroke()}const g=x.createRadialGradient(tx,tt+27,2,tx,tt+27,30);g.addColorStop(0,'rgba(45,255,136,.04)');g.addColorStop(1,'transparent');x.fillStyle=g;x.fillRect(tx-30,tt-3,60,60)});
+for(const p of wp){p.x+=1.8+Math.sin(t+p.y*.01)*.4;p.y+=Math.sin(t*.5+p.x*.005)*.25-.15;p.l++;if(p.l>p.m||p.x>W+8){p.x=-8;p.y=40+Math.random()*380;p.l=0}const al=.06*(1-p.l/p.m);x.beginPath();x.arc(p.x,p.y,.7,0,6.28);x.fillStyle='rgba(45,255,136,'+al+')';x.fill();x.beginPath();x.moveTo(p.x,p.y);x.lineTo(p.x-6,p.y+.8);x.strokeStyle='rgba(45,255,136,'+(al*.4)+')';x.lineWidth=.3;x.stroke()}x.strokeStyle='rgba(150,180,255,.03)';x.lineWidth=.4;for(let i=0;i<35;i++){const rx=(i*25+t*50)%W,ry=(i*17+t*100)%H;x.beginPath();x.moveTo(rx,ry);x.lineTo(rx-1.5,ry+10);x.stroke()}x.font='10px Outfit,sans-serif';x.fillStyle='rgba(45,255,136,.25)';x.textAlign='left';x.fillText('← Monsoon wind: 8–20 m/s orographic uplift',15,25);x.fillText('Ghat road with MVAWT turbines',15,H-15);requestAnimationFrame(d)}d()}();
+
+// SCROLL REVEAL + NAV
+!function(){const o=new IntersectionObserver(e=>{e.forEach(e=>{if(e.isIntersecting)e.target.classList.add('vis')})},{threshold:.1,rootMargin:'0px 0px -30px 0px'});document.querySelectorAll('.rv,.tl-item').forEach(e=>o.observe(e));addEventListener('scroll',()=>{document.getElementById('nav').classList.toggle('scrolled',pageYOffset>50)})}();
+</script>
+</body>
+</html>
